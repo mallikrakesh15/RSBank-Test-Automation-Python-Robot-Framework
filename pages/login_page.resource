@@ -8,6 +8,7 @@ ${password_locator}    id:password
 ${login-btn_locator}    id:login-btn
 ${visible_element_locator}    xpath://h1
 ${success_message_locator}    css:.message.success
+${invalid_message_locator}    css:.auth-message
 
 *** Keywords ***
 Click On Login
@@ -22,5 +23,9 @@ Login Using The Credential
 Verify Successful Login
     ${success_message}=    Get Text    ${success_message_locator}
     Element Should Contain    ${success_message_locator}    Welcome
+
+Verify Invalid Login Message
+    ${invalid_message}=    Get Text    ${invalid_message_locator}
+    Should Be Equal As Strings    ${invalid_message}    Invalid username or password.
 
 
