@@ -1,5 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
+Library    Collections
 
 
 *** Variables ***
@@ -11,7 +12,21 @@ ${invalid_password}    Manoj123
 
 *** Keywords ***
 Open RS Bank Page
-    Open Browser    ${BaseURL}     ${BrowserName}
+    IF    $BrowserName.lower() == "chrome"
+        ${options}=    Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys
+        ${prefs}=    Create Dictionary    
+...     credentials_enable_service=${False}
+...     profile.password_manager_enabled=${False}
+...     profile.password_manager_leak_detection=${False}
+        Call Method    ${options}    add_experimental_option    prefs    ${prefs}
+        Create Webdriver    Chrome    options=${options}
+    ELSE IF    $BrowserName.lower() == "edge"
+        Create Webdriver    Edge
+    ELSE IF    $BrowserName.lower() == "firefox"
+        Create Webdriver    Firefox
+    END
+
+    Go To    ${BaseURL}
     Maximize Browser Window
 
 Close The Browser

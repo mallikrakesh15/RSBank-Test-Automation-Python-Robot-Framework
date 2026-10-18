@@ -2,7 +2,7 @@
 Documentation    Validate Log Out Functionality
 Resource    ../resources/common.resource
 Resource    ../pages/login_page.resource
-Resource    ../resources/logout_page.resource
+Resource    ../pages/logout_page.resource
 Test Setup    Open RS Bank Page
 Test Teardown   Close The Browser
 

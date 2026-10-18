@@ -5,7 +5,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta content="Robot Framework 7.4.2 (Python 3.14.5 on win32)" name="Generator">
+<meta content="Robot Framework 7.5 (Python 3.14.5 on win32)" name="Generator">
 <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKcAAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAAqAAAAAAAAAAAAAAAAAAAALIAAAD/AAAA4AAAANwAAADcAAAA3AAAANwAAADcAAAA3AAAANwAAADcAAAA4AAAAP8AAACxAAAAAAAAAKYAAAD/AAAAuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC/AAAA/wAAAKkAAAD6AAAAzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN8AAAD/AAAA+gAAAMMAAAAAAAAAAgAAAGsAAABrAAAAawAAAGsAAABrAAAAawAAAGsAAABrAAAADAAAAAAAAADaAAAA/wAAAPoAAADDAAAAAAAAAIsAAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAANEAAAAAAAAA2gAAAP8AAAD6AAAAwwAAAAAAAAAAAAAAMgAAADIAAAAyAAAAMgAAADIAAAAyAAAAMgAAADIAAAAFAAAAAAAAANoAAAD/AAAA+gAAAMMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADaAAAA/wAAAPoAAADDAAAAAAAAADwAAAB8AAAAAAAAAGAAAABcAAAAAAAAAH8AAABKAAAAAAAAAAAAAAAAAAAA2gAAAP8AAAD6AAAAwwAAAAAAAADCAAAA/wAAACkAAADqAAAA4QAAAAAAAAD7AAAA/wAAALAAAAAGAAAAAAAAANoAAAD/AAAA+gAAAMMAAAAAAAAAIwAAAP4AAAD/AAAA/wAAAGAAAAAAAAAAAAAAAMkAAAD/AAAAigAAAAAAAADaAAAA/wAAAPoAAADDAAAAAAAAAAAAAAAIAAAAcAAAABkAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAAAAAAAAAAAA2gAAAP8AAAD7AAAAywAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN4AAAD/AAAAqwAAAP8AAACvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALIAAAD/AAAAsgAAAAAAAAC5AAAA/wAAAMoAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMkAAAD/AAAAvAAAAAAAAAAAAAAAAAAAAKwAAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAArQAAAAAAAAAAwAMAAIABAAAf+AAAP/wAAD/8AAAgBAAAP/wAAD/8AAA//AAAJIwAADHEAAA//AAAP/wAAB/4AACAAQAAwAMAAA==">
 <style media="all">
 :root {
@@ -574,6 +574,22 @@ th.stats-col-graph:hover {
 .metadata td {
     vertical-align: top;
 }
+.metadata .tags {
+    display: flex;
+    flex-wrap: wrap;
+}
+.metadata .tags .label {
+    font-size: 1em;
+    margin: 0 7px 2px 0;
+    padding: 1px 5px;
+    letter-spacing: normal;
+}
+/* https://stackoverflow.com/questions/75238633 */
+@supports (-moz-appearance: none) {
+    .metadata .tags .label {
+        padding-top: 3px;
+    }
+}
 .keyword-metadata {
     font-size: 0.9em;
 }
@@ -1119,6 +1135,7 @@ window.model = (function () {
         test.fullName = data.parent.fullName + '.' + test.name;
         test.formatParentName = function () { return util.formatParentName(test); };
         test.timeout = data.timeout;
+        test.metadata = data.metadata;
         test.populateKeywords = createIterablePopulator('Keyword');
         test.childrenNames = ['keyword'];
         test.isChildrenLoaded = data.isChildrenLoaded;
@@ -1567,7 +1584,7 @@ window.testdata = function () {
             timeout: strings.get(element[3]),
             args: strings.get(element[5]),
             assign: strings.get(element[6]),
-            tags: strings.get(element[7]),
+            tags: tags(element[7], strings),
             doc: function () {
                 var doc = strings.get(element[4]);
                 this.doc = function () { return doc; };
@@ -1602,7 +1619,7 @@ window.testdata = function () {
         return util.map(taglist, strings.get);
     }
     function createTest(parent, element, strings, index) {
-        var status = element[4];
+        var status = element[5];
         var test = model.Test({
             parent: parent,
             id: 't' + (index + 1),
@@ -1613,6 +1630,7 @@ window.testdata = function () {
                 return doc;
             },
             timeout: strings.get(element[1]),
+            metadata: parseMetadata(element[4], strings),
             status: parseStatus(status),
             message: function () {
                 var msg = status.length == 4 ? strings.get(status[3]) : '';
@@ -1621,9 +1639,9 @@ window.testdata = function () {
             },
             times: model.Times(times(status)),
             tags: tags(element[3], strings),
-            isChildrenLoaded: typeof(element[5]) !== 'number'
+            isChildrenLoaded: typeof(element[6]) !== 'number'
         });
-        lazyPopulateKeywordsFromFile(test, element[5], strings);
+        lazyPopulateKeywordsFromFile(test, element[6], strings);
         return test;
     }
     function createSuite(parent, element, strings, index) {
@@ -2073,25 +2091,25 @@ storage = function () {
 window.output = {};
 </script>
 <script type="text/javascript">
-window.output["suite"] = [1,2,3,4,[],[1,0,32249],[],[[5,0,0,[6,7],[1,737,19989],[[1,8,9,0,0,0,0,0,[1,740,11461],[[0,10,11,0,12,13,0,0,[1,743,11179],[[744,2,14]]],[0,15,11,0,16,0,0,0,[1,11922,278],[]]]],[0,17,18,0,0,0,0,0,[1,12202,899],[[0,19,11,0,20,21,0,0,[1,12203,897],[[12204,2,22]]]]],[0,23,18,0,0,24,0,0,[1,13101,689],[[0,25,11,0,26,27,0,0,[1,13102,477],[[13103,2,28]]],[0,29,11,0,30,31,0,0,[1,13579,127],[[13580,2,32],[13626,2,33]]],[0,34,11,0,35,36,0,0,[1,13707,84],[[13707,2,37]]]]],[0,38,9,0,0,39,0,0,[1,13791,3495],[[0,40,11,0,41,42,0,0,[1,13791,3494],[]]]],[0,43,18,0,0,0,0,0,[1,17287,143],[[0,44,11,0,45,46,47,0,[1,17287,125],[[17412,2,48]]],[0,49,11,0,50,51,0,0,[1,17413,17],[[17429,2,52]]]]],[2,53,9,0,0,0,0,0,[1,17430,3295],[[0,54,11,0,55,0,0,0,[1,17431,3294],[]]]]]],[56,0,0,[7],[1,20729,11517],[[1,8,9,0,0,0,0,0,[1,20731,6094],[[0,10,11,0,12,13,0,0,[1,20732,6056],[[20733,2,14]]],[0,15,11,0,16,0,0,0,[1,26788,36],[]]]],[0,17,18,0,0,0,0,0,[1,26828,187],[[0,19,11,0,20,21,0,0,[1,26829,186],[[26829,2,22]]]]],[0,23,18,0,0,57,0,0,[1,27016,317],[[0,25,11,0,26,27,0,0,[1,27017,122],[[27018,2,28]]],[0,29,11,0,30,31,0,0,[1,27139,102],[[27139,2,32],[27174,2,33]]],[0,34,11,0,35,36,0,0,[1,27241,91],[[27242,2,37]]]]],[0,38,9,0,0,58,0,0,[1,27333,2532],[[0,40,11,0,41,42,0,0,[1,27333,2531],[]]]],[0,59,18,0,0,0,0,0,[1,29866,52],[[0,44,11,0,45,58,60,0,[1,29868,49],[[29917,2,61]]],[0,62,63,0,64,65,0,0,[1,29917,1],[]]]],[2,53,9,0,0,0,0,0,[1,29919,2326],[[0,54,11,0,55,0,0,0,[1,29925,2320],[]]]]]]],[],[2,2,0,0]];
+window.output["suite"] = [1,2,3,0,[],[1,0,33861],[[4,5,6,7,[],[1,84,22450],[],[[8,0,0,[9,10],[],[1,701,11745],[[1,11,12,0,0,0,0,[],[1,702,5670],[[5,13,0,0,0,0,0,[],[1,703,1045],[[0,14,15,0,16,17,18,[],[1,704,6],[[710,2,19]]],[0,20,15,0,21,22,23,[],[1,710,2],[[712,2,24]]],[0,25,15,0,26,27,0,[],[1,712,1],[]],[0,28,29,0,30,31,0,[],[1,714,1033],[[731,2,32]]]]],[6,33,0,0,0,0,0,[],[3,1748,1],[[0,28,29,0,30,34,0,[],[3,1748,0],[]]]],[6,35,0,0,0,0,0,[],[3,1748,1],[[0,28,29,0,30,36,0,[],[3,1749,0],[]]]],[0,37,29,0,38,39,0,[],[1,1749,4571],[[1750,2,40]]],[0,41,29,0,42,0,0,[],[1,6321,51],[]]]],[0,43,44,0,0,0,0,[],[1,6373,244],[[0,45,29,0,46,47,0,[],[1,6374,243],[[6374,2,48]]]]],[0,49,44,0,0,50,0,[],[1,6618,3450],[[0,51,29,0,52,53,0,[],[1,6618,131],[[6619,2,54]]],[0,55,29,0,56,57,0,[],[1,6750,98],[[6751,2,58],[6781,2,59]]],[0,60,29,0,61,62,0,[],[1,6848,3220],[[6849,2,63]]]]],[0,64,12,0,0,65,0,[],[1,10069,41],[[0,66,29,0,67,68,0,[],[1,10069,39],[]]]],[0,69,44,0,0,0,0,[],[1,10110,74],[[0,70,29,0,71,72,73,[],[1,10111,48],[[10158,2,74]]],[0,75,29,0,76,77,0,[],[1,10159,25],[[10183,2,78]]]]],[2,79,12,0,0,0,0,[],[1,10184,2261],[[0,80,29,0,81,0,0,[],[1,10185,2260],[]]]]]],[82,0,0,[9,10],[],[1,12448,10083],[[1,11,12,0,0,0,0,[],[1,12451,4804],[[5,13,0,0,0,0,0,[],[1,12452,949],[[0,14,15,0,16,17,18,[],[1,12453,2],[[12455,2,83]]],[0,20,15,0,21,22,23,[],[1,12455,2],[[12457,2,24]]],[0,25,15,0,26,27,0,[],[1,12458,1],[]],[0,28,29,0,30,31,0,[],[1,12460,940],[[12461,2,32]]]]],[6,33,0,0,0,0,0,[],[3,13401,1],[[0,28,29,0,30,34,0,[],[3,13401,0],[]]]],[6,35,0,0,0,0,0,[],[3,13402,1],[[0,28,29,0,30,36,0,[],[3,13402,0],[]]]],[0,37,29,0,38,39,0,[],[1,13405,3809],[[13405,2,40]]],[0,41,29,0,42,0,0,[],[1,17214,40],[]]]],[0,43,44,0,0,0,0,[],[1,17256,177],[[0,45,29,0,46,47,0,[],[1,17257,176],[[17257,2,48]]]]],[0,49,44,0,0,84,0,[],[1,17434,311],[[0,51,29,0,52,53,0,[],[1,17434,116],[[17435,2,54]]],[0,55,29,0,56,57,0,[],[1,17551,101],[[17552,2,58],[17601,2,59]]],[0,60,29,0,61,62,0,[],[1,17652,93],[[17652,2,63]]]]],[0,64,12,0,0,85,0,[],[1,17745,2500],[[0,66,29,0,67,68,0,[],[1,17746,2499],[]]]],[0,86,44,0,0,0,0,[],[1,20246,26],[[0,70,29,0,71,85,87,[],[1,20247,25],[[20271,2,88]]],[0,89,15,0,90,91,0,[],[1,20272,1],[]]]],[2,79,12,0,0,0,0,[],[1,20273,2258],[[0,80,29,0,81,0,0,[],[1,20273,2257],[]]]]]]],[],[2,2,0,0]],[92,93,94,95,[],[1,22537,11321],[],[[96,0,0,[9,10],[],[1,22562,11293],[[1,11,12,0,0,0,0,[],[1,22564,4442],[[5,13,0,0,0,0,0,[],[1,22565,1009],[[0,14,15,0,16,17,18,[],[1,22566,2],[[22567,2,97]]],[0,20,15,0,21,22,23,[],[1,22568,1],[[22569,2,24]]],[0,25,15,0,26,27,0,[],[1,22570,1],[]],[0,28,29,0,30,31,0,[],[1,22571,1003],[[22571,2,32]]]]],[6,33,0,0,0,0,0,[],[3,23575,1],[[0,28,29,0,30,34,0,[],[3,23575,0],[]]]],[6,35,0,0,0,0,0,[],[3,23575,1],[[0,28,29,0,30,36,0,[],[3,23576,0],[]]]],[0,37,29,0,38,39,0,[],[1,23577,3385],[[23577,2,40]]],[0,41,29,0,42,0,0,[],[1,26962,44],[]]]],[0,43,44,0,0,0,0,[],[1,27007,257],[[0,45,29,0,46,47,0,[],[1,27008,256],[[27009,2,48]]]]],[0,49,44,0,0,50,0,[],[1,27265,3773],[[0,51,29,0,52,53,0,[],[1,27266,117],[[27266,2,54]]],[0,55,29,0,56,57,0,[],[1,27383,111],[[27384,2,58],[27419,2,59]]],[0,60,29,0,61,62,0,[],[1,27495,3543],[[27495,2,63]]]]],[0,64,12,0,0,65,0,[],[1,31039,46],[[0,66,29,0,67,68,0,[],[1,31041,44],[]]]],[0,69,44,0,0,0,0,[],[1,31085,73],[[0,70,29,0,71,72,73,[],[1,31086,53],[[31139,2,74]]],[0,75,29,0,76,77,0,[],[1,31140,18],[[31158,2,78]]]]],[0,98,99,0,0,0,0,[],[1,31159,351],[[0,45,29,0,46,100,0,[],[1,31159,350],[[31159,2,101]]]]],[0,64,12,0,0,102,0,[],[1,31511,40],[[0,66,29,0,67,68,0,[],[1,31514,36],[]]]],[0,103,99,0,0,0,0,[],[1,31551,22],[[0,70,29,0,71,102,104,[],[1,31551,20],[[31572,2,105]]],[0,89,15,0,90,106,0,[],[1,31572,1],[]]]],[2,79,12,0,0,0,0,[],[1,31574,2280],[[0,80,29,0,81,0,0,[],[1,31575,2279],[]]]]]]],[],[1,1,0,0]]],[],[],[3,3,0,0]];
 </script>
 <script type="text/javascript">
 window.output["strings"] = [];
 </script>
 <script type="text/javascript">
-window.output["strings"] = window.output["strings"].concat(["*","*Login Test","*E:\\TESTING\\AUTOMATION\\ROBOT\\RSBank-Lead\\tests\\login_test.robot","*../tests/login_test.robot","*<p>Validate Login Functionality\x3c/p>","*Valid Login Check","*regression","*smoke","*Open RS Bank Page","*common","*Open Browser","*SeleniumLibrary","*<p>Opens a new browser instance to the optional <code>url\x3c/code>.\x3c/p>","*${BaseURL}    ${BrowserName}","*Opening browser 'Chrome' to base url '<a href=\"http://127.0.0.1:8000/\">http://127.0.0.1:8000/\x3c/a>'.","*Maximize Browser Window","*<p>Maximizes current browser window.\x3c/p>","*Click On Login","*login_page","*Click Link","*<p>Clicks a link identified by <code>locator\x3c/code>.\x3c/p>","*${login_btn_locator}","*Clicking link 'css:.home-login-btn'.","*Login Using The Credential","*${valid_username}    ${valid_password}","*Input Text","*<p>Types the given <code>text\x3c/code> into the text field identified by <code>locator\x3c/code>.\x3c/p>","*${username_locator}    ${username}","*Typing text 'manoj1' into text field 'id:username'.","*Input Password","*<p>Types the given password into the text field identified by <code>locator\x3c/code>.\x3c/p>","*${password_locator}    ${password}","*Typing password into text field 'id:password'.","*Temporally setting log level to: NONE","*Click Button","*<p>Clicks the button identified by <code>locator\x3c/code>.\x3c/p>","*${login-btn_locator}","*Clicking button 'id:login-btn'.","*Wait For The Element Visible","*${visible_element_locator}","*Wait Until Element Is Visible","*<p>Waits until the element <code>locator\x3c/code> is visible.\x3c/p>","*${visible_locator}","*Verify Successful Login","*Get Text","*<p>Returns the text value of the element identified by <code>locator\x3c/code>.\x3c/p>","*${success_message_locator}","*${success_message}","*${success_message} = Welcome back, Manoj!","*Element Should Contain","*<p>Verifies that element <code>locator\x3c/code> contains text <code>expected\x3c/code>.\x3c/p>","*${success_message_locator}    Welcome","*Element 'css:.message.success' contains text 'Welcome'.","*Close The Browser","*Close Browser","*<p>Closes the current browser.\x3c/p>","*InValid Login Check","*${valid_username}    ${invalid_password}","*${invalid_message_locator}","*Verify Invalid Login Message","*${invalid_message}","*${invalid_message} = Invalid username or password.","*Should Be Equal As Strings","*BuiltIn","*<p>Fails if objects are unequal after converting them to strings.\x3c/p>","*${invalid_message}    Invalid username or password."]);
+window.output["strings"] = window.output["strings"].concat(["*","*Tests","*E:\\TESTING\\AUTOMATION\\ROBOT\\RSBank-Lead\\tests","*../tests","*Login Test","*E:\\TESTING\\AUTOMATION\\ROBOT\\RSBank-Lead\\tests\\login_test.robot","*../tests/login_test.robot","*<p>Validate Login Functionality\x3c/p>","*Valid Login Check","*regression","*smoke","*Open RS Bank Page","*common","*$BrowserName.lower() == &quot;chrome&quot;","*Evaluate","*BuiltIn","*<p>Evaluates the given expression in Python and returns the result.\x3c/p>","*sys.modules['selenium.webdriver'].ChromeOptions()    sys","*${options}","*${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x00000236A9C55D30&gt;","*Create Dictionary","*<p>Creates and returns a dictionary based on the given `items`.\x3c/p>","*credentials_enable_service=${False}    profile.password_manager_enabled=${False}    profile.password_manager_leak_detection=${False}","*${prefs}","*${prefs} = {'credentials_enable_service': False, 'profile.password_manager_enabled': False, 'profile.password_manager_leak_detection': False}","*Call Method","*<p>Calls the named method of the given object with the provided arguments.\x3c/p>","*${options}    add_experimental_option    prefs    ${prefs}","*Create Webdriver","*SeleniumLibrary","*<p>Creates an instance of Selenium WebDriver.\x3c/p>","*Chrome    options=${options}","*Creating an instance of the Chrome WebDriver.","*$BrowserName.lower() == &quot;edge&quot;","*Edge","*$BrowserName.lower() == &quot;firefox&quot;","*Firefox","*Go To","*<p>Navigates the current browser window to the provided <code>url\x3c/code>.\x3c/p>","*${BaseURL}","*Opening url '<a href=\"http://127.0.0.1:8000/\">http://127.0.0.1:8000/\x3c/a>'","*Maximize Browser Window","*<p>Maximizes current browser window.\x3c/p>","*Click On Login","*login_page","*Click Link","*<p>Clicks a link identified by <code>locator\x3c/code>.\x3c/p>","*${login_btn_locator}","*Clicking link 'css:.home-login-btn'.","*Login Using The Credential","*${valid_username}    ${valid_password}","*Input Text","*<p>Types the given <code>text\x3c/code> into the text field identified by <code>locator\x3c/code>.\x3c/p>","*${username_locator}    ${username}","*Typing text 'manoj1' into text field 'id:username'.","*Input Password","*<p>Types the given password into the text field identified by <code>locator\x3c/code>.\x3c/p>","*${password_locator}    ${password}","*Typing password into text field 'id:password'.","*Temporally setting log level to: NONE","*Click Button","*<p>Clicks the button identified by <code>locator\x3c/code>.\x3c/p>","*${login-btn_locator}","*Clicking button 'id:login-btn'.","*Wait For The Element Visible","*${visible_element_locator}","*Wait Until Element Is Visible","*<p>Waits until the element <code>locator\x3c/code> is visible.\x3c/p>","*${visible_locator}","*Verify Successful Login","*Get Text","*<p>Returns the text value of the element identified by <code>locator\x3c/code>.\x3c/p>","*${success_message_locator}","*${success_message}","*${success_message} = Welcome back, Manoj!","*Element Should Contain","*<p>Verifies that element <code>locator\x3c/code> contains text <code>expected\x3c/code>.\x3c/p>","*${success_message_locator}    Welcome","*Element 'css:.message.success' contains text 'Welcome'.","*Close The Browser","*Close Browser","*<p>Closes the current browser.\x3c/p>","*InValid Login Check","*${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x00000236A9DF1450&gt;","*${valid_username}    ${invalid_password}","*${invalid_message_locator}","*Verify Invalid Login Message","*${invalid_message}","*${invalid_message} = Invalid username or password.","*Should Be Equal As Strings","*<p>Fails if objects are unequal after converting them to strings.\x3c/p>","*${invalid_message}    Invalid username or password.","*Logout Test","*E:\\TESTING\\AUTOMATION\\ROBOT\\RSBank-Lead\\tests\\logout_test.robot","*../tests/logout_test.robot","*<p>Validate Log Out Functionality\x3c/p>","*Check Logout","*${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x00000236A9DF0F50&gt;","*Click On Logout","*logout_page","*${logout_btn_locator}","*Clicking link 'css:.logout-link'.","*${success_logout_message_locator}","*Verify Successful Logout Message","*${logout_message}","*${logout_message} = You have been logged out successfully.","*${logout_message}    You have been logged out successfully."]);
 </script>
 <script type="text/javascript">
-window.output["stats"] = [[{"elapsed":"00:00:32","fail":0,"label":"All Tests","pass":2,"skip":0}],[{"elapsed":"00:00:20","fail":0,"label":"regression","pass":1,"skip":0},{"elapsed":"00:00:32","fail":0,"label":"smoke","pass":2,"skip":0}],[{"elapsed":"00:00:32","fail":0,"id":"s1","label":"Login Test","name":"Login Test","pass":2,"skip":0}]];
+window.output["stats"] = [[{"elapsed":"00:00:33","fail":0,"label":"All Tests","pass":3,"skip":0}],[{"elapsed":"00:00:33","fail":0,"label":"regression","pass":3,"skip":0},{"elapsed":"00:00:33","fail":0,"label":"smoke","pass":3,"skip":0}],[{"elapsed":"00:00:34","fail":0,"id":"s1","label":"Tests","name":"Tests","pass":3,"skip":0},{"elapsed":"00:00:22","fail":0,"id":"s1-s1","label":"Tests.Login Test","name":"Login Test","pass":2,"skip":0},{"elapsed":"00:00:11","fail":0,"id":"s1-s2","label":"Tests.Logout Test","name":"Logout Test","pass":1,"skip":0}]];
 </script>
 <script type="text/javascript">
 window.output["errors"] = [];
 </script>
 <script type="text/javascript">
-window.output["baseMillis"] = 1792316870426;
+window.output["baseMillis"] = 1792345540315;
 </script>
 <script type="text/javascript">
-window.output["generated"] = 32308;
+window.output["generated"] = 33934;
 </script>
 <script type="text/javascript">
 window.output["expand_keywords"] = null;
@@ -2355,10 +2373,16 @@ function addExecutionLog(main) {
           <td class="doc">{{html doc()}}</td>
         </tr>
         {{/if}}
+        {{each metadata}}
+        <tr>
+          <th>{{html $value[0]}}:</th>
+          <td class="doc">{{html $value[1]}}</td>
+        </tr>
+        {{/each}}
         {{if tags.length}}
         <tr>
           <th>Tags:</th>
-          <td>{{html tags.join(', ')}}</td>
+          <td><div class="tags">{{each tags}}<span class="label">{{html $value}}</span>{{/each}}</div></td>
         </tr>
         {{/if}}
         {{if timeout}}
@@ -2411,10 +2435,10 @@ function addExecutionLog(main) {
           <td class="doc">{{html doc()}}</td>
         </tr>
         {{/if}}
-        {{if tags}}
+        {{if tags.length}}
         <tr>
           <th>Tags:</th>
-          <td>{{html tags}}</td>
+          <td><div class="tags">{{each tags}}<span class="label">{{html $value}}</span>{{/each}}</div></td>
         </tr>
         {{/if}}
         {{if timeout}}
