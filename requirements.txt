@@ -1,0 +1,8 @@
+robotframework
+robotframework-seleniumlibrary
+
+
+#robot --outputdir reports tests\login_test.robot
+#robot -v BrowserName:Edge --outputdir reports\edge tests
+#robot --include smoke -v BrowserName:Edge --outputdir reports\edge tests
+#robot --exclude smoke -v BrowserName:Edge --outputdir reports\edge tests

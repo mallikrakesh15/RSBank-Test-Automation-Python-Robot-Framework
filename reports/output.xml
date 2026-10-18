@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.14.5 on win32)" generated="2026-10-18T12:28:18.190383" rpa="false" schemaversion="5">
+<suite id="s1" name="Login Test" source="E:\TESTING\AUTOMATION\ROBOT\RSBank-Lead\tests\login_test.robot">
+<test id="s1-t1" name="Valid Login Check" line="12">
+<kw name="Open RS Bank Page" owner="common" type="SETUP">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-10-18T12:28:19.048943" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:8000/'.</msg>
+<arg>${BaseURL}</arg>
+<arg>${BrowserName}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2026-10-18T12:28:19.048152" elapsed="14.749751"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2026-10-18T12:28:33.799016" elapsed="0.046150"/>
+</kw>
+<status status="PASS" start="2026-10-18T12:28:18.995531" elapsed="14.849974"/>
+</kw>
+<kw name="Click On Login" owner="login_page">
+<kw name="Click Link" owner="SeleniumLibrary">
+<msg time="2026-10-18T12:28:33.847517" level="INFO">Clicking link 'css:.home-login-btn'.</msg>
+<arg>${login_btn_locator}</arg>
+<doc>Clicks a link identified by ``locator``.</doc>
+<status status="PASS" start="2026-10-18T12:28:33.846592" elapsed="1.255714"/>
+</kw>
+<status status="PASS" start="2026-10-18T12:28:33.846017" elapsed="1.256609"/>
+</kw>
+<kw name="Login Using The Credential" owner="login_page">
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-10-18T12:28:35.105519" level="INFO">Typing text 'manoj1' into text field 'id:username'.</msg>
+<arg>${username_locator}</arg>
+<arg>${username}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-10-18T12:28:35.104702" elapsed="0.216988"/>
+</kw>
+<kw name="Input Password" owner="SeleniumLibrary">
+<msg time="2026-10-18T12:28:35.323388" level="INFO">Typing password into text field 'id:password'.</msg>
+<msg time="2026-10-18T12:28:35.378808" level="INFO">Temporally setting log level to: NONE</msg>
+<arg>${password_locator}</arg>
+<arg>${password}</arg>
+<doc>Types the given password into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-10-18T12:28:35.322370" elapsed="0.123218"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2026-10-18T12:28:35.446657" level="INFO">Clicking button 'id:login-btn'.</msg>
+<arg>${login-btn_locator}</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2026-10-18T12:28:35.446008" elapsed="3.758014"/>
+</kw>
+<arg>${valid_username}</arg>
+<arg>${valid_password}</arg>
+<status status="PASS" start="2026-10-18T12:28:35.103554" elapsed="4.100759"/>
+</kw>
+<kw name="Wait For The Element Visible" owner="common">
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${visible_locator}</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2026-10-18T12:28:39.206583" elapsed="0.282332"/>
+</kw>
+<arg>${visible_element_locator}</arg>
+<status status="PASS" start="2026-10-18T12:28:39.205681" elapsed="0.283643"/>
+</kw>
+<kw name="Verify Successful Login" owner="login_page">
+<kw name="Get Text" owner="SeleniumLibrary">
+<msg time="2026-10-18T12:28:39.699952" level="INFO">${success_message} = Welcome back, Manoj!</msg>
+<var>${success_message}</var>
+<arg>${success_message_locator}</arg>
+<doc>Returns the text value of the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-10-18T12:28:39.491522" elapsed="0.208710"/>
+</kw>
+<kw name="Element Should Contain" owner="SeleniumLibrary">
+<msg time="2026-10-18T12:28:39.726846" level="INFO">Element 'css:.message.success' contains text 'Welcome'.</msg>
+<arg>${success_message_locator}</arg>
+<arg>Welcome</arg>
+<doc>Verifies that element ``locator`` contains text ``expected``.</doc>
+<status status="PASS" start="2026-10-18T12:28:39.701046" elapsed="0.026109"/>
+</kw>
+<status status="PASS" start="2026-10-18T12:28:39.490417" elapsed="0.237105"/>
+</kw>
+<kw name="Close The Browser" owner="common" type="TEARDOWN">
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-10-18T12:28:39.729748" elapsed="2.981982"/>
+</kw>
+<status status="PASS" start="2026-10-18T12:28:39.728664" elapsed="2.983505"/>
+</kw>
+<tag>regression</tag>
+<tag>smoke</tag>
+<status status="PASS" start="2026-10-18T12:28:18.994210" elapsed="23.718627"/>
+</test>
+<doc>Validate Login Functionality</doc>
+<status status="PASS" start="2026-10-18T12:28:18.198016" elapsed="24.518419"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="1" fail="0" skip="0">regression</stat>
+<stat pass="1" fail="0" skip="0">smoke</stat>
+</tag>
+<suite>
+<stat name="Login Test" id="s1" pass="1" fail="0" skip="0">Login Test</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
